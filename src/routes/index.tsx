@@ -139,7 +139,6 @@ function Index() {
                 src={mdMonogram}
                 alt="Mansi & Darshan monogram"
                 className="w-40 md:w-56 lg:w-64 mx-auto animate-gentle-float drop-shadow-[0_10px_30px_oklch(0.32_0.14_22/0.25)]"
-                style={{ mixBlendMode: "multiply" }}
                 loading="eager"
               />
             </div>
@@ -194,7 +193,7 @@ function Index() {
         {/* COUNTDOWN */}
         <section className="relative px-6 py-20">
           <ScrollReveal>
-            <SectionTitle kicker="The Wait Begins" title="Counting Down" script="till we say I do" />
+            <SectionTitle kicker="Shubh Muhurat Approaches" title="Counting Down" script="till the sacred vows are taken" />
           </ScrollReveal>
           <ScrollReveal variant="scale" delay={150}>
             <Countdown />
