@@ -130,7 +130,7 @@ function Index() {
           </p>
 
           {/* MD Monogram */}
-          <div className="relative mt-6 mb-2 flex items-center justify-center">
+          <div className="relative mt-3 mb-1 flex items-center justify-center">
             <span className="hidden md:block h-px w-24 lg:w-32" style={{ background: "linear-gradient(90deg, transparent, var(--gold))" }} />
             <div className="relative mx-4">
               <div className="absolute inset-0 -z-10 rounded-full blur-2xl opacity-50"
@@ -144,9 +144,7 @@ function Index() {
             </div>
             <span className="hidden md:block h-px w-24 lg:w-32" style={{ background: "linear-gradient(270deg, transparent, var(--gold))" }} />
           </div>
-          <Ornament />
-
-          <p className="font-display text-xs md:text-sm tracking-[0.5em] uppercase" style={{ color: "var(--maroon)" }}>
+          <p className="mt-2 font-display text-xs md:text-sm tracking-[0.5em] uppercase" style={{ color: "var(--maroon)" }}>
             With the blessings of our families
           </p>
 
@@ -316,6 +314,25 @@ function Index() {
           </div>
         </section>
 
+        {/* CELEBRATIONS — Two Days · Three Dreams */}
+        <section className="relative px-6 py-20">
+          <ScrollReveal>
+            <div className="text-center max-w-3xl mx-auto">
+              <p className="font-display text-[10px] md:text-xs tracking-[0.5em] uppercase mb-4" style={{ color: "var(--magenta)" }}>
+                Two Days · Three Dreams
+              </p>
+              <h2 className="font-display text-5xl md:text-7xl text-gold-shimmer leading-tight">
+                The Celebrations
+              </h2>
+              <p className="font-script text-4xl md:text-5xl mt-3" style={{ color: "var(--maroon)" }}>
+                behind the curtain
+              </p>
+              <div className="ornament-divider mt-8">
+                <span className="text-gold-shimmer text-xl">✦</span>
+              </div>
+            </div>
+          </ScrollReveal>
+        </section>
 
         {/* Knot divider closing the page */}
         <section className="relative py-16">
