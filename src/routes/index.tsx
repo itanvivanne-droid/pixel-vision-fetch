@@ -1,17 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { MapPin } from "lucide-react";
 import { EnvelopeOpening } from "@/components/wedding/EnvelopeOpening";
 import { ScratchReveal } from "@/components/wedding/ScratchReveal";
+import { MusicPlayer } from "@/components/wedding/MusicPlayer";
 
 import { Countdown } from "@/components/wedding/Countdown";
 import { FlowerShower } from "@/components/wedding/FlowerShower";
+import { LanternShower } from "@/components/wedding/LanternShower";
 import { ScrollReveal } from "@/components/wedding/ScrollReveal";
 import { AmbientDrift } from "@/components/wedding/AmbientDrift";
-import { KnotDivider } from "@/components/wedding/KnotDivider";
 import mandalaBg from "@/assets/mandala-bg.jpg";
 import tropicalCorner from "@/assets/tropical-corner.png";
 import palmLeaf from "@/assets/palm-leaf.png";
-import mdMonogram from "@/assets/md-monogram.png";
+import mdMonogram from "@/assets/new-monogram.jpg";
+import { Curtain } from "@/components/wedding/Curtain";
+import { KnottedDrape } from "@/components/wedding/KnottedDrape";
+import haldiCardBg from "@/assets/haldi-card-bg.png";
+import sangeetCardBg from "@/assets/sangeet-new-bg.jpg";
+import weddingCardBg from "@/assets/wedding-card-bg.png";
+import mandapImg from "@/assets/mandap.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,7 +27,7 @@ export const Route = createFileRoute("/")({
       { title: "Mansi & Darshan — A Royal Wedding" },
       { name: "description", content: "Join us in celebrating the royal wedding of Mansi & Darshan, 19–20 June 2026, Mumbai." },
       { property: "og:title", content: "Mansi weds Darshan" },
-      { property: "og:description", content: "A three-day royal celebration. 19–20 June 2026, Mumbai." },
+      { property: "og:description", content: "A two-day royal celebration. 19–20 June 2026, Mumbai." },
     ],
   }),
   component: Index,
@@ -90,10 +98,28 @@ function SabyaFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
+function CurtainHeader({ kicker, title, script }: { kicker: string; title: string; script: string }) {
+  return (
+    <div className="text-center mb-6 md:mb-8">
+      <p className="font-display text-[9px] md:text-[10px] tracking-[0.5em] uppercase mb-2" style={{ color: "var(--magenta)" }}>
+        {kicker}
+      </p>
+      <h3 className="font-script text-4xl md:text-6xl leading-none" style={{ color: "var(--maroon)" }}>
+        {title}
+      </h3>
+      <p className="mt-2 font-serif italic text-sm md:text-base" style={{ color: "var(--maroon)", opacity: 0.85 }}>
+        {script}
+      </p>
+      <div className="ornament-divider mt-4 max-w-[140px]"><span className="text-gold-shimmer">✦</span></div>
+    </div>
+  );
+}
+
 function Index() {
   const [opened, setOpened] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [shower, setShower] = useState(false);
+  const [lanterns, setLanterns] = useState(false);
 
   const handleOpen = () => {
     setOpened(true);
@@ -101,10 +127,39 @@ function Index() {
     setTimeout(() => setShower(false), 6000);
   };
 
+  // Soft scroll-lock: allow scrolling within the hero (so the scratch card
+  // is reachable), but smoothly clamp the page back if the user tries to
+  // scroll past the hero before revealing the date.
+  const heroRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!opened || revealed) return;
+    let raf = 0;
+    const clamp = () => {
+      raf = 0;
+      const el = heroRef.current;
+      if (!el) return;
+      const max = el.offsetTop + el.offsetHeight - window.innerHeight;
+      if (window.scrollY > max + 4) {
+        window.scrollTo({ top: Math.max(0, max), behavior: "smooth" });
+      }
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(clamp);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [opened, revealed]);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden" style={{ background: "var(--ivory)" }}>
       {!opened && <EnvelopeOpening onOpen={handleOpen} />}
       {shower && <FlowerShower count={30} />}
+      {lanterns && <LanternShower count={70} />}
+      <MusicPlayer opened={opened} />
 
       {/* faint mandala background */}
       <div
@@ -119,14 +174,14 @@ function Index() {
 
       <main className={`relative z-10 transition-opacity duration-1000 ${opened ? "opacity-100" : "opacity-0"}`}>
         {/* HERO */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center">
+        <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center">
           <img src={palmLeaf} alt="" className="absolute -top-4 -left-6 w-32 md:w-48 opacity-80 animate-sway origin-top-left" loading="lazy" />
           <img src={palmLeaf} alt="" className="absolute -top-4 -right-6 w-32 md:w-48 opacity-80 animate-sway origin-top-right scale-x-[-1]" loading="lazy" />
           <img src={tropicalCorner} alt="" className="absolute -bottom-6 -left-6 w-40 md:w-64 opacity-90 animate-gentle-float" loading="lazy" />
           <img src={tropicalCorner} alt="" className="absolute -bottom-6 -right-6 w-40 md:w-64 opacity-90 animate-gentle-float scale-x-[-1]" style={{ animationDelay: "1s" }} loading="lazy" />
 
           <p className="font-serif italic tracking-widest text-sm" style={{ color: "var(--magenta)" }}>
-            ॥ Shree Ganeshay Namah ॥ ॥ Shree Mahaviray Namah ॥
+            ॥ Shree Ganeshay Namah ॥<br />॥ Shree Mahaviray Namah ॥
           </p>
 
           {/* MD Monogram */}
@@ -138,7 +193,8 @@ function Index() {
               <img
                 src={mdMonogram}
                 alt="Mansi & Darshan monogram"
-                className="w-40 md:w-56 lg:w-64 mx-auto animate-gentle-float drop-shadow-[0_10px_30px_oklch(0.32_0.14_22/0.25)]"
+                className="w-40 md:w-56 lg:w-64 mx-auto animate-gentle-float"
+                style={{ mixBlendMode: "multiply" }}
                 loading="eager"
               />
             </div>
@@ -169,27 +225,52 @@ function Index() {
           <Ornament />
 
           {/* Scratch reveal */}
-          <div className="mt-12 w-full max-w-md">
-            <p className="mb-4 text-sm tracking-[0.3em] uppercase font-display" style={{ color: "var(--magenta)" }}>
+          <div className="mt-12 w-full max-w-2xl mx-auto">
+            <p className="mb-3 font-script text-2xl md:text-3xl" style={{ color: "var(--maroon)" }}>
+              The beginning of our forever awaits
+            </p>
+            <p className="mb-6 text-sm tracking-[0.3em] uppercase font-display" style={{ color: "var(--magenta)" }}>
               Scratch to reveal the date
             </p>
             <ScratchReveal onRevealed={() => setRevealed(true)}>
-              <div>
-                <p className="font-display text-xs tracking-[0.4em] uppercase" style={{ color: "var(--magenta)" }}>Save the date</p>
-                <p className="font-script text-5xl md:text-6xl mt-2" style={{ color: "var(--maroon)" }}>20th June</p>
-                <p className="font-display text-sm tracking-[0.3em] mt-1" style={{ color: "var(--maroon)" }}>2026 · MUMBAI</p>
+              <div className="py-6 px-4 w-full">
+                <p className="font-script text-4xl sm:text-5xl md:text-6xl whitespace-nowrap" style={{ color: "var(--maroon)" }}>
+                  20<sup className="text-xl md:text-2xl">th</sup> June
+                </p>
+                <p className="mt-3 font-display text-xs md:text-sm tracking-[0.4em]" style={{ color: "var(--maroon)" }}>2026 · MUMBAI</p>
+                <div className="ornament-divider my-3 max-w-[160px] mx-auto"><span className="text-gold-shimmer">✦</span></div>
+                <p className="font-display text-[10px] md:text-xs tracking-[0.5em] uppercase" style={{ color: "var(--magenta)" }}>Save the date</p>
               </div>
             </ScratchReveal>
             {revealed && (
-              <p className="mt-4 font-serif italic animate-fade-up" style={{ color: "var(--maroon)" }}>
+              <p className="mt-6 font-serif italic text-xl md:text-2xl animate-fade-up" style={{ color: "var(--maroon)" }}>
                 Mark your hearts. Save your day.
               </p>
             )}
           </div>
+
+          {/* Scroll-down prompt — appears after scratch reveal, fades out */}
+          {revealed && (
+            <div
+              className="mt-10 flex flex-col items-center gap-2 opacity-0 pointer-events-none"
+              style={{ animation: "scroll-hint 4.5s ease-out 0.6s forwards" }}
+            >
+              <span className="font-display text-[10px] tracking-[0.5em] uppercase" style={{ color: "var(--maroon)", opacity: 0.6 }}>
+                Scroll to continue
+              </span>
+              <span className="text-2xl animate-bounce" style={{ color: "var(--gold)" }}>↓</span>
+            </div>
+          )}
         </section>
 
         {/* COUNTDOWN */}
-        <section className="relative px-6 py-20">
+        <section className="relative px-6 pt-4 pb-8 md:pt-6 md:pb-10">
+          {/* Golden decorative divider line */}
+          <div className="flex items-center justify-center gap-3 mb-8 md:mb-10 max-w-md mx-auto">
+            <span className="block h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, var(--gold))" }} />
+            <span className="text-gold-shimmer text-lg">✦</span>
+            <span className="block h-px flex-1" style={{ background: "linear-gradient(270deg, transparent, var(--gold))" }} />
+          </div>
           <ScrollReveal>
             <SectionTitle kicker="Shubh Muhurat Approaches" title="Counting Down" script="till the sacred vows are taken" />
           </ScrollReveal>
@@ -197,6 +278,35 @@ function Index() {
             <Countdown />
           </ScrollReveal>
         </section>
+
+        {/* BRIDGE — invitation poem (no container) */}
+        <ScrollReveal variant="fade">
+          <div className="relative px-6 pt-10 pb-16 md:pt-16 md:pb-20 max-w-3xl mx-auto text-center">
+            <p
+              className="font-script leading-[1.5] text-[1.9rem] md:text-[3rem]"
+              style={{ color: "var(--maroon)" }}
+            >
+              With hearts full of love
+              <br />
+              and families united in joy,
+              <br />
+              we invite you to celebrate
+              <br />
+              the wedding festivities
+              <br />
+              as we begin this beautiful journey
+              <br />
+              of togetherness, laughter, and forever.
+            </p>
+
+            <div className="mt-8 flex items-center justify-center gap-3 text-[0.7rem] md:text-xs tracking-[0.45em] uppercase font-serif" style={{ color: "var(--gold)" }}>
+              <span className="missive-line" />
+              <span>✦ With Love ✦</span>
+              <span className="missive-line" />
+            </div>
+          </div>
+        </ScrollReveal>
+
 
         {/* FAMILIES */}
         <section className="relative px-6 py-24">
@@ -263,7 +373,7 @@ function Index() {
                     <span className="h-px w-8" style={{ background: "var(--gold)" }} />
                   </div>
                   
-                  <h3 className="mt-4 font-script text-6xl md:text-7xl text-maroon-shimmer leading-tight">Darshan Doshi</h3>
+                  <h3 className="mt-4 font-script text-6xl md:text-7xl text-maroon-shimmer leading-tight">Darshan </h3>
                   <p className="font-display text-[10px] tracking-[0.5em] uppercase mt-2" style={{ color: "var(--maroon)" }}>The Groom</p>
                   <Ornament />
                   <div className="space-y-5 text-base">
@@ -302,8 +412,10 @@ function Index() {
                     <div className="ornament-divider my-3"><span style={{ color: "var(--gold)" }}>✦</span></div>
                     <ScrollReveal variant="up" delay={250}>
                       <p className="text-sm">
-                        <span className="font-serif text-base inline-block" style={{ color: "var(--maroon)" }}>Dr. Drishti · Dr. Yash</span><br />
-                        <span className="font-serif text-base" style={{ color: "var(--maroon)" }}>Kruti · Kunur · Malay · Jinal · Hardik</span>
+                        <span className="font-serif text-base inline-block" style={{ color: "var(--maroon)" }}>Dr. Drishti</span><br />
+                        <span className="font-serif text-base inline-block" style={{ color: "var(--maroon)" }}>Medhaben-Siddharthbhai Pathak</span><br />
+                        <span className="font-serif text-base inline-block" style={{ color: "var(--maroon)" }}>Pritiben-Sanjaybhai Joshi</span><br />
+                        <span className="font-serif text-base inline-block" style={{ color: "var(--maroon)" }}>Atmarpit Smrutiji</span>
                       </p>
                     </ScrollReveal>
                   </div>
@@ -314,30 +426,347 @@ function Index() {
           </div>
         </section>
 
-        {/* CELEBRATIONS — Two Days · Three Dreams */}
-        <section className="relative px-6 py-20">
+        {/* THE CELEBRATIONS */}
+        <section className="relative px-4 md:px-6 py-12 md:py-20 max-w-6xl mx-auto">
           <ScrollReveal>
             <div className="text-center max-w-3xl mx-auto">
               <p className="font-display text-[10px] md:text-xs tracking-[0.5em] uppercase mb-4" style={{ color: "var(--magenta)" }}>
-                Two Days · Three Dreams
+                One Dream · Two Days · Three Royal Functions
               </p>
               <h2 className="font-display text-5xl md:text-7xl text-gold-shimmer leading-tight">
                 The Celebrations
               </h2>
-              <p className="font-script text-4xl md:text-5xl mt-3" style={{ color: "var(--maroon)" }}>
-                behind the curtain
-              </p>
               <div className="ornament-divider mt-8">
                 <span className="text-gold-shimmer text-xl">✦</span>
               </div>
             </div>
           </ScrollReveal>
+
         </section>
 
-        {/* Knot divider closing the page */}
-        <section className="relative py-16">
-          <ScrollReveal variant="fade"><KnotDivider /></ScrollReveal>
-        </section>
+      {/* FUNCTIONS */}
+      <section className="relative py-8 md:py-16">
+        
+        {/* ─── CURTAIN 1: HALDI & MEHENDI ─── */}
+        <div className="max-w-3xl mx-auto px-4">
+          <CurtainHeader kicker="Day One" title="Haldi & Mehendi" script="soft hues and happy beginnings" />
+        </div>
+        <div className="max-w-3xl mx-auto px-4">
+          <Curtain label="Tap to Unveil" minHeight="min(820px, 150vw)">
+            <div
+              className="relative flex flex-col items-center text-center px-6 md:px-20"
+              style={{
+                backgroundImage: `url(${haldiCardBg})`,
+                backgroundSize: "cover",
+                backgroundPosition: "top center",
+                backgroundRepeat: "no-repeat",
+                minHeight: "min(820px, 150vw)",
+                paddingTop: "clamp(50px, 18%, 180px)",
+                paddingBottom: "clamp(40px, 14%, 140px)",
+              }}
+            >
+              <div
+                className="relative z-10 flex flex-col items-center justify-center flex-1 w-full max-w-sm mx-auto px-4 md:px-8 py-6 md:py-10 rounded-xl"
+                style={{
+                  background: "oklch(0.98 0.015 80 / 0.85)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 4px 30px oklch(0.5 0.06 70 / 0.1)",
+                  border: "1px solid oklch(0.85 0.08 80 / 0.3)",
+                }}
+              >
+                <p className="font-display text-[9px] md:text-[10px] tracking-[0.5em] uppercase" style={{ color: "var(--magenta)" }}>
+                  — 1 · The Morning of —
+                </p>
+                <h3 className="mt-4 font-script text-5xl md:text-7xl leading-tight" style={{ color: "oklch(0.55 0.18 65)" }}>
+                  Haldi
+                </h3>
+                <p className="font-script text-3xl md:text-4xl -mt-1" style={{ color: "var(--maroon)" }}>
+                  & Mehendi
+                </p>
+                <p className="mt-3 font-display text-[9px] md:text-xs tracking-[0.4em] uppercase" style={{ color: "var(--maroon)" }}>
+                  19 June 2026 · Morning
+                </p>
+                
+                <Ornament />
+
+                <p className="font-serif italic text-base md:text-lg max-w-xs" style={{ color: "var(--maroon)" }}>
+                  "Soft hues, happy vibes —<br />
+                  let us keep it light, fresh and full of love."
+                </p>
+
+                <Ornament />
+
+                <p className="font-display text-[9px] tracking-[0.4em] uppercase" style={{ color: "var(--magenta)" }}>
+                  — The Venue —
+                </p>
+                <p className="mt-2 font-display text-sm md:text-base tracking-[0.15em] uppercase" style={{ color: "var(--maroon)" }}>
+                  Imara by Canto
+                </p>
+                <p className="mt-1 font-serif text-sm" style={{ color: "var(--foreground)" }}>
+                  Gate No. 1 & 2, Turf Club
+                </p>
+                <p className="font-serif text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  Mahalaxmi Race Course
+                </p>
+
+                <a
+                  href="https://maps.google.com/?q=Imara+by+Canto,+Mahalaxmi+Race+Course,+Mumbai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-md"
+                  style={{
+                    background: "linear-gradient(135deg, oklch(0.32 0.14 22), oklch(0.25 0.10 20))",
+                    color: "var(--gold)",
+                    border: "1px solid oklch(0.75 0.16 80 / 0.5)",
+                  }}
+                >
+                  <MapPin size={14} />
+                  <span className="font-display text-[9px] tracking-[0.3em] uppercase mt-0.5">View on Map</span>
+                </a>
+
+                <div className="ornament-divider my-5 max-w-[100px]"><span style={{ color: "var(--gold)" }}>✦</span></div>
+
+                <p className="font-display text-[9px] tracking-[0.4em] uppercase" style={{ color: "var(--magenta)" }}>
+                  — The Hour —
+                </p>
+                <p className="mt-2 font-serif text-base font-semibold" style={{ color: "var(--maroon)" }}>
+                  10:30 AM onwards
+                </p>
+                <p className="font-serif italic text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  followed by lunch
+                </p>
+                
+                <div className="mt-6 px-5 py-1.5 rounded-sm" style={{ border: "1px solid oklch(0.75 0.16 80 / 0.4)", background: "oklch(0.97 0.02 80 / 0.7)" }}>
+                  <p className="font-display text-[8px] tracking-[0.4em] uppercase" style={{ color: "var(--gold)" }}>
+                    Dress · Pastel Bloom
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Curtain>
+        </div>
+
+        <div className="my-10 md:my-16"><KnottedDrape /></div>
+
+        {/* ─── CURTAIN 2: SANGEET ─── */}
+        <div className="max-w-3xl mx-auto px-4">
+          <CurtainHeader kicker="Day One" title="Sangeet & Ring Ceremony" script="a night of music, dance & love" />
+        </div>
+        <div className="max-w-3xl mx-auto px-4">
+          <Curtain label="Tap to Unveil" minHeight="min(820px, 150vw)">
+            <div
+              className="relative flex flex-col items-center text-center px-6 md:px-20"
+              style={{
+                backgroundImage: `url(${sangeetCardBg})`,
+                backgroundSize: "contain",
+                backgroundPosition: "center center",
+                backgroundRepeat: "no-repeat",
+                backgroundColor: "oklch(0.06 0.02 200)",
+                minHeight: "min(820px, 150vw)",
+                paddingTop: "clamp(50px, 18%, 180px)",
+                paddingBottom: "clamp(40px, 14%, 140px)",
+              }}
+            >
+              <div
+                className="relative z-10 flex flex-col items-center justify-center flex-1 w-full max-w-sm mx-auto px-4 md:px-8 py-6 md:py-10 rounded-xl"
+                style={{
+                  background: "oklch(0.06 0.02 200 / 0.75)",
+                  backdropFilter: "blur(14px)",
+                  boxShadow: "0 4px 30px oklch(0.05 0.02 200 / 0.4), inset 0 0 0 1px oklch(0.75 0.16 80 / 0.25)",
+                  border: "1px solid oklch(0.75 0.12 80 / 0.35)",
+                }}
+              >
+                <p className="font-display text-[9px] md:text-[10px] tracking-[0.5em] uppercase" style={{ color: "oklch(0.85 0.12 80)" }}>
+                  — 2 · The Night of —
+                </p>
+                <h3 className="mt-4 font-script text-5xl md:text-7xl leading-tight" style={{ color: "oklch(0.88 0.10 82)" }}>
+                  Sangeet
+                </h3>
+                <p className="font-script text-3xl md:text-4xl -mt-1" style={{ color: "oklch(0.80 0.08 60)" }}>
+                  &amp; Ring Ceremony
+                </p>
+                <p className="mt-3 font-display text-[9px] md:text-xs tracking-[0.4em] uppercase" style={{ color: "oklch(0.78 0.10 80)" }}>
+                  19 June 2026 · Evening
+                </p>
+
+                <Ornament />
+
+                <p className="font-serif italic text-base md:text-lg max-w-xs" style={{ color: "oklch(0.90 0.04 80)" }}>
+                  "Join us for a night of&nbsp;<br />
+                  Music, Dance &amp; Love!"
+                </p>
+
+                <Ornament />
+
+                <p className="font-display text-[9px] tracking-[0.4em] uppercase" style={{ color: "oklch(0.85 0.12 80)" }}>
+                  — The Venue —
+                </p>
+                <p className="mt-2 font-display text-sm md:text-base tracking-[0.15em] uppercase" style={{ color: "oklch(0.88 0.10 82)" }}>
+                  Taj The Trees
+                </p>
+                <p className="mt-1 font-serif text-sm" style={{ color: "oklch(0.82 0.05 80)" }}>
+                  Eastern Expressway, Vikhroli
+                </p>
+
+                <a
+                  href="https://www.google.com/maps/place/Taj+The+Trees,+Mumbai/@19.0928262,72.9215139,17z/data=!4m9!3m8!1s0x3be7c7366770a291:0x18aaf36cc47a4d47!5m2!4m1!1i2!8m2!3d19.0928262!4d72.9215139!16s%2Fg%2F11j1fdbyql?entry=ttu&g_ep=EgoyMDI2MDUxMi4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-md"
+                  style={{
+                    background: "linear-gradient(135deg, oklch(0.32 0.14 22), oklch(0.25 0.10 20))",
+                    color: "var(--gold)",
+                    border: "1px solid oklch(0.75 0.16 80 / 0.5)",
+                  }}
+                >
+                  <MapPin size={14} />
+                  <span className="font-display text-[9px] tracking-[0.3em] uppercase mt-0.5">View on Map</span>
+                </a>
+
+                <div className="ornament-divider my-5 max-w-[100px]"><span style={{ color: "oklch(0.80 0.14 80)" }}>✦</span></div>
+
+                <p className="font-display text-[9px] tracking-[0.4em] uppercase" style={{ color: "oklch(0.85 0.12 80)" }}>
+                  — The Hour —
+                </p>
+                <p className="mt-2 font-serif text-base font-semibold" style={{ color: "oklch(0.88 0.10 82)" }}>
+                  7:00 PM onwards
+                </p>
+                <p className="font-serif italic text-sm" style={{ color: "oklch(0.75 0.04 80)" }}>
+                  followed by dinner
+                </p>
+
+                <div className="mt-6 px-5 py-1.5 rounded-sm" style={{ border: "1px solid oklch(0.75 0.16 80 / 0.4)", background: "oklch(0.10 0.02 200 / 0.6)" }}>
+                  <p className="font-display text-[8px] tracking-[0.4em] uppercase" style={{ color: "oklch(0.82 0.14 80)" }}>
+                    Dress · Black &amp; Gold
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Curtain>
+        </div>
+
+        <div className="my-10 md:my-16"><KnottedDrape /></div>
+
+        {/* ─── CURTAIN 3: WEDDING ─── */}
+        <div className="max-w-3xl mx-auto px-4">
+          <CurtainHeader kicker="Day Two · The Vows" title="The Wedding" script="where two souls become one" />
+        </div>
+        <div className="max-w-3xl mx-auto px-4">
+          <Curtain label="Tap to Unveil" minHeight="min(820px, 150vw)">
+            <div
+              className="relative flex flex-col items-center text-center px-6 md:px-20"
+              style={{
+                backgroundImage: `url(${weddingCardBg})`,
+                backgroundSize: "contain",
+                backgroundPosition: "center center",
+                backgroundRepeat: "no-repeat",
+                backgroundColor: "oklch(0.98 0.015 80)",
+                minHeight: "min(820px, 150vw)",
+                paddingTop: "clamp(50px, 18%, 180px)",
+                paddingBottom: "clamp(40px, 14%, 140px)",
+              }}
+            >
+              <div
+                className="relative z-10 flex flex-col items-center justify-center flex-1 w-full max-w-sm mx-auto px-4 md:px-8 py-6 md:py-10 rounded-xl"
+                style={{
+                  background: "oklch(0.98 0.015 80 / 0.85)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 4px 30px oklch(0.5 0.06 70 / 0.1)",
+                  border: "1px solid oklch(0.85 0.08 80 / 0.3)",
+                }}
+              >
+                <p className="font-display text-[9px] md:text-[10px] tracking-[0.5em] uppercase" style={{ color: "var(--magenta)" }}>
+                  — 3 · The Final Chapter —
+                </p>
+                <h3 className="mt-4 font-script text-5xl md:text-7xl leading-tight" style={{ color: "oklch(0.55 0.18 65)" }}>
+                  Wedding
+                </h3>
+                <p className="mt-3 font-display text-[9px] md:text-xs tracking-[0.4em] uppercase" style={{ color: "var(--maroon)" }}>
+                  20 June 2026
+                </p>
+
+                <Ornament />
+
+                <p className="font-serif italic text-base md:text-lg max-w-xs" style={{ color: "var(--maroon)" }}>
+                  "Beginning of our happily ever after!"
+                </p>
+
+                <Ornament />
+
+                <p className="font-display text-[9px] tracking-[0.4em] uppercase" style={{ color: "var(--magenta)" }}>
+                  — The Venue —
+                </p>
+                <p className="mt-2 font-display text-sm md:text-base tracking-[0.15em] uppercase" style={{ color: "var(--maroon)" }}>
+                  St. Regis, Imperial Banquet
+                </p>
+                <p className="mt-1 font-serif text-sm" style={{ color: "var(--foreground)" }}>
+                  Lower Parel, Mumbai
+                </p>
+
+                <a
+                  href="https://maps.google.com/?q=St.+Regis,+Imperial+Banquet,+Lower+Parel,+Mumbai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-md"
+                  style={{
+                    background: "linear-gradient(135deg, oklch(0.32 0.14 22), oklch(0.25 0.10 20))",
+                    color: "var(--gold)",
+                    border: "1px solid oklch(0.75 0.16 80 / 0.5)",
+                  }}
+                >
+                  <MapPin size={14} />
+                  <span className="font-display text-[9px] tracking-[0.3em] uppercase mt-0.5">View on Map</span>
+                </a>
+
+                <div className="ornament-divider my-5 max-w-[100px]"><span style={{ color: "var(--gold)" }}>✦</span></div>
+
+                <p className="font-display text-[9px] tracking-[0.4em] uppercase" style={{ color: "var(--magenta)" }}>
+                  — The Hour —
+                </p>
+                <div className="mt-2 space-y-1 font-serif text-sm md:text-base" style={{ color: "var(--maroon)" }}>
+                  <p><span className="font-semibold">Baarat Swagat:</span> 03:45 PM</p>
+                  <p><span className="font-semibold">Hast Melap:</span> 05:30 PM</p>
+                </div>
+              </div>
+            </div>
+          </Curtain>
+        </div>
+
+      </section>
+
+      {/* FOOTER */}
+      <section className="relative px-4 md:px-6 py-20 md:py-32 mt-12 md:mt-24 text-center overflow-hidden" style={{ background: "linear-gradient(180deg, oklch(0.38 0.16 22) 0%, oklch(0.28 0.13 22) 100%)", borderTop: "1px solid oklch(0.75 0.16 80 / 0.4)" }}>
+        <div className="absolute inset-0 pointer-events-none opacity-[0.06] md:opacity-10" style={{ backgroundImage: `url(${mandalaBg})`, backgroundSize: "600px", mixBlendMode: "soft-light", filter: "invert(1) brightness(1.6) contrast(0.6)" }} />
+
+        <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center">
+          <ScrollReveal variant="fade" delay={150}>
+            <h3 className="font-script text-4xl md:text-5xl text-gold-shimmer mb-8">Bless Us with Your Presence</h3>
+          </ScrollReveal>
+
+          <ScrollReveal variant="fade" delay={300}>
+            <p className="font-serif italic text-base md:text-xl leading-relaxed max-w-2xl mx-auto mb-10" style={{ color: "var(--ivory)", opacity: 0.85 }}>
+              As we step into this new chapter of love, laughter and lifelong togetherness, we humbly request your presence to shower us with your blessings and make these moments truly unforgettable.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal variant="fade" delay={450}>
+            <button onClick={() => { setLanterns(true); setTimeout(() => setLanterns(false), 8000); }} className="mb-10 px-8 py-3 rounded-full font-display text-[10px] md:text-xs tracking-[0.4em] uppercase hover:scale-105 transition-all animate-pulse-glow shadow-lg text-center leading-relaxed" style={{ background: "linear-gradient(135deg, oklch(0.42 0.16 22 / 0.85), oklch(0.30 0.13 22 / 0.95))", color: "var(--gold)", border: "1px solid oklch(0.75 0.16 80 / 0.5)", backdropFilter: "blur(8px)" }}>
+              Light the Celebration<br />Click the button ✦
+            </button>
+          </ScrollReveal>
+
+          <ScrollReveal variant="fade" delay={600}>
+            <p className="font-script text-4xl md:text-5xl text-gold-shimmer mb-1">With love,</p>
+            <p className="font-script text-5xl md:text-7xl text-gold-shimmer mb-10">Darshan & Mansi</p>
+          </ScrollReveal>
+
+          <ScrollReveal variant="fade" delay={750}>
+            <p className="font-display tracking-[0.5em] text-[10px] md:text-xs uppercase" style={{ color: "oklch(0.85 0.12 80)" }}>
+              — Blessings —
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
       </main>
     </div>
   );

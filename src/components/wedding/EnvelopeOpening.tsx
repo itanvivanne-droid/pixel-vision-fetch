@@ -34,33 +34,29 @@ export function EnvelopeOpening({ onOpen }: Props) {
       />
 
       {/* pearl seal — clickable */}
-      <button
-        onClick={handleClick}
-        className={`relative z-10 w-[60vw] max-w-[420px] aspect-square transition-transform duration-500 ${
-          breaking ? "scale-150 opacity-0" : "hover:scale-105 animate-gentle-float"
-        }`}
-        style={{
-          backgroundImage: `url(${seal})`,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          border: "none",
-          background: `url(${seal}) center/contain no-repeat`,
-          cursor: "pointer",
-          filter: "drop-shadow(0 12px 30px rgba(120, 100, 70, 0.35))",
-        }}
-        aria-label="Open invitation"
-      />
+      <div className="translate-y-[65%] md:translate-y-[75%]">
+        <button
+          onClick={handleClick}
+          className={`relative z-10 w-[55vw] max-w-[380px] aspect-square transition-transform duration-500 ${
+            breaking ? "scale-150 opacity-0" : "hover:scale-105 animate-gentle-float"
+          }`}
+          style={{
+            backgroundImage: `url(${seal})`,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            border: "none",
+            background: `url(${seal}) center/contain no-repeat`,
+            cursor: "pointer",
+            filter: "drop-shadow(0 12px 30px rgba(120, 100, 70, 0.35))",
+          }}
+          aria-label="Open invitation"
+        />
+      </div>
 
       {/* prompt */}
       {!breaking && (
-        <div className="absolute bottom-16 left-0 right-0 text-center px-4 z-10">
-          <p
-            className="font-display text-[11px] md:text-sm tracking-[0.5em] uppercase"
-            style={{ color: "oklch(0.45 0.06 50)" }}
-          >
-            Tap to Open
-          </p>
+        <div className="absolute bottom-[12%] md:bottom-[14%] left-0 right-0 text-center px-4 z-10">
           <p
             className="mt-3 font-script text-2xl md:text-3xl"
             style={{ color: "oklch(0.4 0.08 40)" }}
