@@ -82,8 +82,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Lovable App" },
       { name: "twitter:description", content: "Pixel Perfect Vision is a web application for creating custom wedding invitation visuals." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a2cae52a-20f9-4036-8efa-a8fdd77565ab/id-preview-6de39566--e6db8235-841a-48bc-95d1-b3df030f04ef.lovable.app-1778784051355.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a2cae52a-20f9-4036-8efa-a8fdd77565ab/id-preview-6de39566--e6db8235-841a-48bc-95d1-b3df030f04ef.lovable.app-1778784051355.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/UEZDs43odDf6dZHh9cREpPuKPFd2/social-images/social-1778871786491-__(3).webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/UEZDs43odDf6dZHh9cREpPuKPFd2/social-images/social-1778871786491-__(3).webp" },
     ],
     links: [
       {

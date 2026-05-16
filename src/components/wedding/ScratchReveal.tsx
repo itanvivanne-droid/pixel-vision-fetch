@@ -7,7 +7,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export function ScratchReveal({ width = 380, height = 220, onRevealed, children }: Props) {
+export function ScratchReveal({ width = 600, height = 350, onRevealed, children }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [revealed, setRevealed] = useState(false);
@@ -41,18 +41,18 @@ export function ScratchReveal({ width = 380, height = 220, onRevealed, children 
 
     // pattern dots
     ctx.fillStyle = "rgba(255,255,255,0.15)";
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 100; i++) {
       ctx.beginPath();
       ctx.arc(Math.random() * size.w, Math.random() * size.h, Math.random() * 2, 0, Math.PI * 2);
       ctx.fill();
     }
 
     ctx.fillStyle = "rgba(50,20,10,0.85)";
-    ctx.font = "bold 18px 'Cinzel Decorative', serif";
+    ctx.font = "bold 24px 'Cinzel Decorative', serif";
     ctx.textAlign = "center";
-    ctx.fillText("✦ SCRATCH HERE ✦", size.w / 2, size.h / 2 - 6);
-    ctx.font = "14px 'Cormorant Garamond', serif";
-    ctx.fillText("to reveal the date", size.w / 2, size.h / 2 + 18);
+    ctx.fillText("✦ SCRATCH HERE ✦", size.w / 2, size.h / 2 - 10);
+    ctx.font = "18px 'Cormorant Garamond', serif";
+    ctx.fillText("to reveal the date", size.w / 2, size.h / 2 + 20);
   }, [size]);
 
   const getPos = (e: React.PointerEvent) => {
@@ -65,11 +65,11 @@ export function ScratchReveal({ width = 380, height = 220, onRevealed, children 
     if (!ctx) return;
     ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
-    ctx.arc(x, y, 28, 0, Math.PI * 2);
+    ctx.arc(x, y, 36, 0, Math.PI * 2); // increased brush size for larger canvas
     ctx.fill();
   };
 
-  const checkRevealed = () => {
+  const checkRevealed = async () => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx || revealed) return;
     const data = ctx.getImageData(0, 0, size.w, size.h).data;
@@ -84,14 +84,24 @@ export function ScratchReveal({ width = 380, height = 220, onRevealed, children 
       const canvas = canvasRef.current!;
       canvas.style.transition = "opacity 0.6s";
       canvas.style.opacity = "0";
+      
+      // Trigger confetti
+      const confetti = (await import("canvas-confetti")).default;
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ["#f5d76e", "#8a6a1f", "#ffffff", "#maroon"]
+      });
+
       onRevealed?.();
     }
   };
 
   return (
-    <div ref={wrapRef} className="relative w-full max-w-[380px] mx-auto" style={{ height: size.h }}>
+    <div ref={wrapRef} className="relative w-full max-w-[600px] mx-auto" style={{ height: size.h }}>
       <div
-        className="absolute inset-0 rounded-2xl gold-border overflow-hidden flex items-center justify-center text-center px-6"
+        className="absolute inset-0 rounded-3xl gold-border overflow-hidden flex flex-col items-center justify-center text-center px-6"
         style={{ background: "linear-gradient(135deg, oklch(0.97 0.02 80), oklch(0.92 0.04 75))" }}
       >
         {children}
@@ -100,7 +110,7 @@ export function ScratchReveal({ width = 380, height = 220, onRevealed, children 
         ref={canvasRef}
         width={size.w}
         height={size.h}
-        className="absolute inset-0 rounded-2xl scratch-canvas"
+        className="absolute inset-0 rounded-3xl scratch-canvas shadow-xl"
         onPointerDown={(e) => { drawing.current = true; const p = getPos(e); scratch(p.x, p.y); }}
         onPointerMove={(e) => { if (!drawing.current) return; const p = getPos(e); scratch(p.x, p.y); }}
         onPointerUp={() => { drawing.current = false; checkRevealed(); }}
